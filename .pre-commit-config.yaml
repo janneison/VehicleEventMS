@@ -1,0 +1,33 @@
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0 # Use the latest version
+    hooks:
+      - id: trailing-whitespace # Elimina espacios en blanco al final de línea
+      - id: end-of-file-fixer # Asegura que los archivos terminen con una nueva línea
+      - id: check-yaml # Verifica sintaxis YAML
+      - id: check-json # Verifica sintaxis JSON
+      - id: check-added-large-files # Evita añadir archivos muy grandes
+      - id: debug-statements # Detecta sentencias de depuración (print, pdb.set_trace)
+      - id: detect-private-key # Detecta claves privadas accidentalmente comiteadas
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 6.0.0 # Use a recent version
+    hooks:
+      - id: flake8 # Linter para Python (errores de estilo y lógica)
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.12.0 # Use a recent version
+    hooks:
+      - id: isort # Ordena imports automáticamente
+
+  - repo: https://github.com/psf/black
+    rev: 23.3.0 # Use a recent version
+    hooks:
+      - id: black # Formateador de código Python (opcional, pero muy recomendado para consistencia)
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.3.0 # Use a recent version
+    hooks:
+      - id: mypy # Verificador de tipos (si usas type hints consistentemente)
+        args: [--ignore-missing-imports, --follow-imports=skip] # Ajusta según tu proyecto

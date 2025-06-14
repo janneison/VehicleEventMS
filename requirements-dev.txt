@@ -1,0 +1,7 @@
+pytest
+pytest-asyncio
+pytest-mock
+asgi-lifespan
+httpx
+testcontainers[postgresql] # Para un PostgreSQL temporal en tests de integración
+aiokafka # Si quieres simular Kafka real en tests de integración
