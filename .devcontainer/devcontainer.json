@@ -1,22 +1,21 @@
-// .devcontainer/devcontainer.json
 {
     "name": "Vehicle Event Microservice",
     "build": {
         "dockerfile": "Dockerfile",
-        "context": ".." // El contexto de construcción es la raíz de tu proyecto
+        "context": ".."
     },
     "customizations": {
         "vscode": {
             "settings": {
                 "python.pythonPath": "/usr/local/bin/python",
                 "python.languageServer": "Pylance",
-                "python.analysis.typeCheckingMode": "basic", // O "strict" si usas mypy a fondo
+                "python.analysis.typeCheckingMode": "basic",
                 "editor.formatOnSave": true,
                 "editor.codeActionsOnSave": {
                     "source.organizeImports": "explicit"
                 },
                 "[python]": {
-                    "editor.defaultFormatter": "ms-python.black-formatter" // Si usas Black
+                    "editor.defaultFormatter": "ms-python.black-formatter"
                 }
             },
             "extensions": [
@@ -26,22 +25,16 @@
                 "mhutchie.git-graph",
                 "eamodio.gitlens",
                 "EditorConfig.EditorConfig",
-                "charliermarsh.black-formatter", // Si usas Black
-                "ms-toolsai.jupyter" // Útil para prototipado o scripts de datos
+                "charliermarsh.black-formatter",
+                "ms-toolsai.jupyter"
             ]
         }
     },
-    "features": {
-        // Puedes añadir features adicionales si las necesitas, por ejemplo, Docker-in-Docker
-        // "ghcr.io/devcontainers/features/docker-in-docker:2": {
-        //     "version": "latest"
-        // }
-    },
-    "forwardPorts": [8000, 5432, 9092], // Puertos de FastAPI, PostgreSQL y Kafka
-    "postCreateCommand": "sudo apt-get update && sudo apt-get install -y iputils-ping dnsutils", // Comando para ejecutar después de que el contenedor se crea por primera vez
-    "remoteUser": "vscode", // El usuario por defecto dentro del contenedor
+    "features": {},
+    "forwardPorts": [8000, 5432, 9092],
+    "postCreateCommand": "sudo apt-get update && sudo apt-get install -y iputils-ping dnsutils",
+    "remoteUser": "vscode",
     "containerEnv": {
-        // Variables de entorno específicas del contenedor que pueden ser sobrescritas por .env
         "DATABASE_URL": "postgresql+asyncpg://user:password@localhost:5432/database_name_for_dev",
         "KAFKA_BOOTSTRAP_SERVERS": "localhost:9092",
         "KAFKA_PROCESSED_EVENTS_TOPIC": "vehicle_events_processed",
@@ -50,7 +43,6 @@
         "Maps_API_KEY": "YOUR_DEV_Maps_API_KEY"
     },
     "mounts": [
-        // Monta tu .env local para que pueda ser leído por pydantic-settings
         "source=${localWorkspaceFolder}/.env,target=/workspaces/vehicle_event_microservice/.env,type=bind,consistency=cached"
     ]
 }
