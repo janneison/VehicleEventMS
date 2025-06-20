@@ -1,7 +1,13 @@
 pytest
 pytest-asyncio
 pytest-mock
+pytest-cov
 asgi-lifespan
 httpx
-testcontainers[postgresql] # Para un PostgreSQL temporal en tests de integración
-aiokafka # Si quieres simular Kafka real en tests de integración
+testcontainers[postgresql]
+aiokafka~=0.8.1
+kafka-python==2.0.2
+black
+flake8
+isort
+mypy

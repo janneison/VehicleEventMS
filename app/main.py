@@ -5,13 +5,22 @@ from app.infrastructure.dependencies import kafka_publisher
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: Start Kafka producer
-    print("Starting Kafka Producer...")
-    await kafka_publisher.start()
+    # Startup
+    try:
+        print("🚀 Starting Kafka Producer...")
+        await kafka_publisher.start()
+    except Exception as e:
+        print(f"❌ Error starting Kafka producer: {e}")
+        raise e
+
     yield
-    # Shutdown: Stop Kafka producer
-    print("Stopping Kafka Producer...")
-    await kafka_publisher.stop()
+
+    # Shutdown
+    try:
+        print("🛑 Stopping Kafka Producer...")
+        await kafka_publisher.stop()
+    except Exception as e:
+        print(f"❌ Error stopping Kafka producer: {e}")
 
 app = FastAPI(
     title="Vehicle Event Microservice",
