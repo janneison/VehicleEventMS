@@ -63,7 +63,7 @@ async def process_vehicle_event_api(
         address=request.address_,
         city=request.city_,
         department=request.department_,
-        fechakeep=request.fechakeep
+        keep_alive_date=request.fechakeep
     )
 
     try:
