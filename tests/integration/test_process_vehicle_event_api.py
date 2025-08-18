@@ -3,9 +3,11 @@ import sys
 from pathlib import Path
 
 import pytest
-from httpx import AsyncClient
+import python_multipart
+from httpx import AsyncClient, ASGITransport
 from asgi_lifespan import LifespanManager
 
+sys.modules["multipart"] = python_multipart
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
 # Set required environment variables before importing the app
@@ -56,7 +58,8 @@ async def test_process_vehicle_event_endpoint():
     }
 
     async with LifespanManager(app):
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
             response = await client.post(
                 "/vehicle-events/process-vehicle-event",
                 json=payload,
@@ -66,3 +69,4 @@ async def test_process_vehicle_event_endpoint():
             data = response.json()
             assert data["status"] == "OK"
             assert data["message"] == "processed"
+

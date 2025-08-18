@@ -23,5 +23,6 @@ class VehicleEventRequest(BaseModel):
     fechakeep: datetime = Field(..., description="Fecha de keep-alive (fecha de respaldo)")
 
 class VehicleEventResponse(BaseModel):
-    status: str = Field(..., example="OK")
+    status: str = Field(..., json_schema_extra={"example": "OK"})
     message: Optional[str] = None
+
