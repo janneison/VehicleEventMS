@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, BigInteger, Float, DateTime, Boolean, text, Date
 from sqlalchemy.dialects.postgresql import ENUM
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import relationship
 import geoalchemy2 as ga # For geometry types
 
