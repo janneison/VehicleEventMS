@@ -179,10 +179,7 @@ class VehicleEventRepositoryImpl(VehicleEventRepository):
         return None
 
     async def insert_ejes_viales(self, address: str, city: str, latitude: float, longitude: float, department: str):
-        # The SP's EjesViales insert references 'Municipios' table for city/department.
-        # This requires `Municipios` model and potentially `SP_ASCII` function in SQL.
-        # For simplicity, this will directly insert if needed, assuming the city/department are valid.
-        # A more robust solution might check if the entry already exists or validate city/department.
+        print("ejes viales")
         new_entry = EjesViales(
             direccion=address,
             municipio=city,
@@ -236,7 +233,6 @@ class VehicleEventRepositoryImpl(VehicleEventRepository):
         self.session.add(new_summary)
         await self.session.flush()
 
-
 class VehicleRepositoryImpl(VehicleRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
@@ -277,13 +273,6 @@ class VehicleRepositoryImpl(VehicleRepository):
             pass
 
     async def get_vehicle_tolerancia_tiempo(self, vehicle_contratista: str) -> int:
-        # This part of the SP uses regex matches against `contratistas` column.
-        # This is hard to replicate efficiently purely in SQLAlchemy.
-        # A workaround is to fetch all `Procesos` and then filter in Python, or
-        # use a text-based search (ILIKE) if exact match is sufficient, or
-        # integrate a proper regex engine if PostgreSQL `regexp_matches` is critical.
-        # For this example, assuming 'contratistas' can be matched directly or contains a single contractor string.
-        # Or, if 'contratistas' is a comma-separated list, iterate.
 
         # Example of a simplified regex matching for direct string comparison:
         stmt = select(Procesos).where(Procesos.contratistas.ilike(f'%{vehicle_contratista}%'), Procesos.toleranciatiempo != 0).limit(1)
@@ -329,11 +318,6 @@ class PeriodRepositoryImpl(PeriodRepository):
             await self.session.flush()
 
     async def get_last_periodo_conductor_for_reset(self, vehicle_id: str, driver_id: int, current_date: datetime) -> Optional[PeriodoConductor]:
-        # SP: WHERE fecha_-fechahasta < '1 minutes'::INTERVAL AND idvehiculo=idveh AND idconductor=idconductor_;
-        # This implies `fecha_` is the current event's processed_date.
-        # It's looking for a period that ended very recently.
-        # The SP code here is a bit ambiguous as `fecha_` is an input and `fechahasta` is a column.
-        # Assuming it means current_date - fechahasta < 1 minute.
         stmt = select(PeriodosConductores).where(
             PeriodosConductores.idvehiculo == vehicle_id,
             PeriodosConductores.idconductor == driver_id
@@ -388,9 +372,6 @@ class SpecialRouteRepositoryImpl(SpecialRouteRepository):
         return _to_programacion_especial_vehiculo_entity(result.scalar_one_or_none())
 
     async def get_nearby_special_route_detail(self, route_id: int, latitude: float, longitude: float) -> Optional[RutaEspecialDetalle]:
-        # This replicates the SP's complex join with `PuntosControl` and `geodistance`.
-        # Requires PostGIS and `geoalchemy2`.
-        # `geodistance` in SP likely refers to ST_Distance.
 
         current_point = func.ST_GeomFromText(f'POINT({longitude} {latitude})', 4326)
 
@@ -411,22 +392,6 @@ class SpecialRouteRepositoryImpl(SpecialRouteRepository):
             )
             .limit(1)
         )
-        
-        # NOTE: The join to `ProgEspecialesVehiculos` in the original SP's `LEFT JOIN rutas_especiales_control rc ON (rc.idpunto = rd.idpunto)`
-        # doesn't directly specify `rc.idprogramacion = rd.idprogramacion`. This is often implied contextually in SPs.
-        # The query here assumes a join that would filter out `RutasEspecialesControl` entries for the *current program*.
-        # If `rutas_especiales_control` can have entries for different programs for the same point, this join needs adjustment.
-        
-        # A direct translation of the SP's JOIN is complicated without the full table schema relationships.
-        # This version tries to filter out points *already in rutas_especiales_control*.
-        # If PuntosControl has a direct relationship to ProgEspecialesVehiculos, use it.
-        # If not, the current model for `RutasEspecialesControl` makes this join harder.
-        # You might need to adjust the join in your actual implementation.
-        
-        # To make the `RutasEspecialesControl` join work properly for a specific programacion,
-        # you'd ideally need a way to filter `RutasEspecialesControl` by `idprogramacion`
-        # which would require passing `idprogramacion` to this method.
-        # For simplicity, current version filters on `idpunto IS NULL`.
         
         result = await self.session.execute(stmt)
         return _to_ruta_especial_detalle_entity(result.scalar_one_or_none())
