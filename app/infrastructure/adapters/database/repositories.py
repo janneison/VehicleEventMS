@@ -232,19 +232,9 @@ class VehicleEventRepositoryImpl(VehicleEventRepository):
                 keep_alive_date=event_model.fecha,  # Using event_model.fecha as fallback
             )
         return None
-
-    async def insert_ejes_viales(
-        self,
-        address: str,
-        city: str,
-        latitude: float,
-        longitude: float,
-        department: str,
-    ):
-        # The SP's EjesViales insert references 'Municipios' table for city/department.
-        # This requires `Municipios` model and potentially `SP_ASCII` function in SQL.
-        # For simplicity, this will directly insert if needed, assuming the city/department are valid.
-        # A more robust solution might check if the entry already exists or validate city/department.
+      
+    async def insert_ejes_viales(self, address: str, city: str, latitude: float, longitude: float, department: str):
+        print("ejes viales")
         new_entry = EjesViales(
             direccion=address,
             municipio=city,
@@ -310,7 +300,6 @@ class VehicleEventRepositoryImpl(VehicleEventRepository):
         self.session.add(new_summary)
         await self.session.flush()
 
-
 class VehicleRepositoryImpl(VehicleRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
@@ -355,13 +344,6 @@ class VehicleRepositoryImpl(VehicleRepository):
             pass
 
     async def get_vehicle_tolerancia_tiempo(self, vehicle_contratista: str) -> int:
-        # This part of the SP uses regex matches against `contratistas` column.
-        # This is hard to replicate efficiently purely in SQLAlchemy.
-        # A workaround is to fetch all `Procesos` and then filter in Python, or
-        # use a text-based search (ILIKE) if exact match is sufficient, or
-        # integrate a proper regex engine if PostgreSQL `regexp_matches` is critical.
-        # For this example, assuming 'contratistas' can be matched directly or contains a single contractor string.
-        # Or, if 'contratistas' is a comma-separated list, iterate.
 
         # Example of a simplified regex matching for direct string comparison:
         stmt = (
@@ -495,12 +477,8 @@ class SpecialRouteRepositoryImpl(SpecialRouteRepository):
         result = await self.session.execute(stmt)
         return _to_programacion_especial_vehiculo_entity(result.scalar_one_or_none())
 
-    async def get_nearby_special_route_detail(
-        self, route_id: int, latitude: float, longitude: float
-    ) -> Optional[RutaEspecialDetalle]:
-        # This replicates the SP's complex join with `PuntosControl` and `geodistance`.
-        # Requires PostGIS and `geoalchemy2`.
-        # `geodistance` in SP likely refers to ST_Distance.
+
+    async def get_nearby_special_route_detail(self, route_id: int, latitude: float, longitude: float) -> Optional[RutaEspecialDetalle]:
 
         current_point = func.ST_GeomFromText(f"POINT({longitude} {latitude})", 4326)
 
@@ -539,11 +517,6 @@ class SpecialRouteRepositoryImpl(SpecialRouteRepository):
             )
             .limit(1)
         )
-
-        # NOTE: The original SP filters out existing points from
-        # `rutas_especiales_control` for the current program.
-        # For simplicity, this version filters on `idpunto IS NULL`.
-
         result = await self.session.execute(stmt)
         return _to_ruta_especial_detalle_entity(result.scalar_one_or_none())
 

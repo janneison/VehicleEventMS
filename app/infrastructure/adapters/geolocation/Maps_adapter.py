@@ -29,7 +29,7 @@ class PostgresGeolocationAdapter(GeolocationService):
             # el resultado sería una fila con una columna que es ese tipo compuesto.
             # Si devuelve un 'RECORD', necesitarías saber los nombres de las columnas o usar un SELECT * para obtenerlas.
             # Basado en tu SP anterior, asumo que devuelve (direccion, municipio, departamento).
-
+            print("Estoy en address")
             row = result.fetchone()
 
             if row:
