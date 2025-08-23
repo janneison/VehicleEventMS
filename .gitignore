@@ -192,3 +192,21 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# Test containers generated files (if any persist outside of pytest lifecycle)
+.testcontainers.properties # For Java/JVM based Testcontainers, not typically used by Python lib directly
+target/                   # Maven/Gradle projects, but sometimes created by dev tools
+
+# Kafka logs and data (if you run Kafka locally outside of Docker Compose)
+kafka-logs/
+zookeeper-data/
+
+# Python build artifacts
+dist/
+build/
+*.egg
+
+# Operating System Files
+.DS_Store
+.Trash/
+Thumbs.db

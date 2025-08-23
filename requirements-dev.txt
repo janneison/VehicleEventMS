@@ -1,0 +1,14 @@
+pytest
+pytest-asyncio
+pytest-mock
+pytest-cov
+asgi-lifespan
+httpx
+python-multipart
+testcontainers[postgresql]
+aiokafka~=0.8.1
+kafka-python==2.0.2
+black
+flake8
+isort
+mypy

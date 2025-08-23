@@ -1,0 +1,48 @@
+{
+    "name": "Vehicle Event Microservice",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "python.pythonPath": "/usr/local/bin/python",
+                "python.languageServer": "Pylance",
+                "python.analysis.typeCheckingMode": "basic",
+                "editor.formatOnSave": true,
+                "editor.codeActionsOnSave": {
+                    "source.organizeImports": "explicit"
+                },
+                "[python]": {
+                    "editor.defaultFormatter": "ms-python.black-formatter"
+                }
+            },
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-azuretools.vscode-docker",
+                "mhutchie.git-graph",
+                "eamodio.gitlens",
+                "EditorConfig.EditorConfig",
+                "charliermarsh.black-formatter",
+                "ms-toolsai.jupyter"
+            ]
+        }
+    },
+    "features": {},
+    "forwardPorts": [8000, 5432, 9092],
+    "postCreateCommand": "sudo apt-get update && sudo apt-get install -y iputils-ping dnsutils",
+    "remoteUser": "vscode",
+    "containerEnv": {
+        "DATABASE_URL": "postgresql+asyncpg://user:password@localhost:5432/database_name_for_dev",
+        "KAFKA_BOOTSTRAP_SERVERS": "localhost:9092",
+        "KAFKA_PROCESSED_EVENTS_TOPIC": "vehicle_events_processed",
+        "KAFKA_RAW_EVENTS_TOPIC": "raw_vehicle_events",
+        "API_KEY": "dev_secure_api_key",
+        "Maps_API_KEY": "YOUR_DEV_Maps_API_KEY"
+    },
+    "mounts": [
+        "source=${localWorkspaceFolder}/.env,target=/workspaces/vehicle_event_microservice/.env,type=bind,consistency=cached"
+    ]
+}
