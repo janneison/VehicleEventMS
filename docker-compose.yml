@@ -32,15 +32,6 @@ services:
       - "8000:8000"
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      DATABASE_URL: postgresql+asyncpg://user:pass@postgres/vehicledb
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://user:pass@postgres/vehicledb}
     volumes:
       - .:/app
-
-  postgres:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: vehicledb
-    ports:
-      - "5432:5432"
