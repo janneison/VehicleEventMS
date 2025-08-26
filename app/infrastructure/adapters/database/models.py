@@ -9,6 +9,7 @@ from sqlalchemy import (
     Float,
     Integer,
     Numeric,
+    SmallInteger,
     String,
     text,
 )
@@ -150,14 +151,11 @@ class Recursos(Base):
 
 class EventosResumen(Base):
     __tablename__ = "eventos_resumen"
-    id = Column(
-        BigInteger, primary_key=True, autoincrement=True
-    )  # Assuming primary key
-    idvehiculo = Column(String)
-    idevento = Column(Integer)
-    valor = Column(Integer)
-    fecha = Column(Date)
-    hora = Column(Integer)
+    idvehiculo = Column(String, primary_key=True)
+    idevento = Column(SmallInteger, primary_key=True)
+    valor = Column(BigInteger)
+    fecha = Column(Date, primary_key=True)
+    hora = Column(SmallInteger, primary_key=True)
 
 
 # Special Transport Tables
