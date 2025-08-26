@@ -32,15 +32,6 @@ services:
       - "8000:8000"
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      DATABASE_URL: postgresql+asyncpg://user:pass@postgres/vehicledb
+      DATABASE_URL: postgresql+asyncpg://jgalindo:jg4l1nd0_2025@experiment2025.cbfclvgzldks.us-east-1.rds.amazonaws.com:5432/xtrackcronos_des22
     volumes:
       - .:/app
-
-  postgres:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: vehicledb
-    ports:
-      - "5432:5432"
