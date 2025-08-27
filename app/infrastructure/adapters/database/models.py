@@ -84,7 +84,11 @@ class EventosDesc(Base):
 
 
 class Procesos(Base):
-    __tablename__ = "procesos"
+    # The table is stored in PostgreSQL with a capitalized name ("Procesos").
+    # SQLAlchemy requires the exact case to be specified so it can quote the
+    # identifier properly; otherwise the database looks for a lowercase table
+    # that doesn't exist.
+    __tablename__ = "Procesos"
     proceso = Column(String, primary_key=True)
     contratistas = Column(String)  # Regex string
     toleranciatiempo = Column(Integer)
