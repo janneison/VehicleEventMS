@@ -139,22 +139,29 @@ class ProgramacionVehicularModel(
     activa = Column(String)  # 'S' or 'N'
 
 
-class Odométros(Base):
+class Odometros(Base):
     __tablename__ = "odometros"
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    idvehiculo = Column(String)
+    idvehiculo = Column(String, primary_key=True)
     valor = Column(Float)
-    fecha = Column(DateTime)
+    fecha = Column(DateTime, primary_key=True)
 
 
 class Recursos(Base):
     __tablename__ = "Recursos"  # Note the mixed case, adjust if needed
-    id = Column(
-        BigInteger, primary_key=True, autoincrement=True
-    )  # Assuming primary key
-    recurso = Column(String)
-    contratista = Column(String)
+    recurso = Column(String, primary_key=True)
+    contratista = Column(String, primary_key=True)
+    tiporecurso = Column(String)
+    nombre = Column(String)
+    estado = Column(String)
+    usuariomovil = Column(String)
+    clavemovil = Column(String)
+    estadomovil = Column(String)
+    latitud = Column(String)
+    longitud = Column(String)
     fechagps = Column(DateTime)
+    estadovehiculo = Column(String)
+    online = Column(String)
+    direccion = Column(String)
     estadogps = Column(String)  # 'OK' or 'NOTOK'
 
 
