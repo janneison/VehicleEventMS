@@ -139,12 +139,11 @@ class ProgramacionVehicularModel(
     activa = Column(String)  # 'S' or 'N'
 
 
-class Odométros(Base):
+class Odometros(Base):
     __tablename__ = "odometros"
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    idvehiculo = Column(String)
+    idvehiculo = Column(String, primary_key=True)
     valor = Column(Float)
-    fecha = Column(DateTime)
+    fecha = Column(DateTime, primary_key=True)
 
 
 class Recursos(Base):
