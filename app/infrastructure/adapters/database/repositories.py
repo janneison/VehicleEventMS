@@ -331,7 +331,14 @@ class VehicleRepositoryImpl(VehicleRepository):
             vehicle_orm.departamento = vehicle.departamento
             vehicle_orm.ultimaactualizacion = vehicle.ultimaactualizacion
             vehicle_orm.direccion = vehicle.direccion
-            vehicle_orm.velocidad = vehicle.velocidad
+            # ``vehiculos.velocidad`` is stored as VARCHAR in the database.  Ensure
+            # we persist the numeric value as a string to avoid asyncpg type
+            # errors when ``None`` is allowed.  The domain entity keeps
+            # ``velocidad`` as ``float`` for easier calculations, so convert it
+            # back here when writing to the DB.
+            vehicle_orm.velocidad = (
+                str(vehicle.velocidad) if vehicle.velocidad is not None else None
+            )
             vehicle_orm.ultimoevento = vehicle.ultimoevento
             vehicle_orm.rumbo = vehicle.rumbo
             vehicle_orm.rumbo_linea_tiempo = vehicle.rumbo_linea_tiempo
