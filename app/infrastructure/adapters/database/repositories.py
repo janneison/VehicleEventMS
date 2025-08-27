@@ -46,6 +46,14 @@ from app.infrastructure.adapters.database.models import (
 )
 
 
+def _parse_float(value: Optional[str]) -> Optional[float]:
+    """Safely convert a potentially null or non-numeric string to float."""
+    try:
+        return float(value) if value is not None else None
+    except (TypeError, ValueError):
+        return None
+
+
 # Helper function for converting ORM models to domain entities
 def _to_vehicle_entity(model: Vehiculos) -> Optional[Vehicle]:
     if not model:
@@ -54,7 +62,7 @@ def _to_vehicle_entity(model: Vehiculos) -> Optional[Vehicle]:
         idvehiculo=model.idvehiculo,
         estado=model.estado,
         tipo_modem=model.tipo_modem,
-        velocidad=model.velocidad,
+        velocidad=_parse_float(model.velocidad),
         direccion=model.direccion,
         latitud=model.latitud,
         longitud=model.longitud,
