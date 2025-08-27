@@ -26,7 +26,12 @@ class Vehiculos(Base):
     idvehiculo = Column(String, primary_key=True)
     estado = Column(String)  # 'Y' or 'N'
     tipo_modem = Column(String)
-    velocidad = Column(Float)
+    # In the production database, the "velocidad" column is stored as a VARCHAR
+    # even though the service expects a numeric value. Mapping it as a Float in
+    # SQLAlchemy causes asyncpg to try decoding the field as a numeric type and
+    # fail when it encounters the underlying VARCHAR OID (1043).  We map it as a
+    # String here and convert it to a float at the repository level.
+    velocidad = Column(String)
     direccion = Column(String)
     latitud = Column(String)
     longitud = Column(String)
@@ -79,7 +84,11 @@ class EventosDesc(Base):
 
 
 class Procesos(Base):
-    __tablename__ = "procesos"
+    # The table is stored in PostgreSQL with a capitalized name ("Procesos").
+    # SQLAlchemy requires the exact case to be specified so it can quote the
+    # identifier properly; otherwise the database looks for a lowercase table
+    # that doesn't exist.
+    __tablename__ = "Procesos"
     proceso = Column(String, primary_key=True)
     contratistas = Column(String)  # Regex string
     toleranciatiempo = Column(Integer)

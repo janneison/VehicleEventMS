@@ -46,6 +46,14 @@ from app.infrastructure.adapters.database.models import (
 )
 
 
+def _parse_float(value: Optional[str]) -> Optional[float]:
+    """Safely convert a potentially null or non-numeric string to float."""
+    try:
+        return float(value) if value is not None else None
+    except (TypeError, ValueError):
+        return None
+
+
 # Helper function for converting ORM models to domain entities
 def _to_vehicle_entity(model: Vehiculos) -> Optional[Vehicle]:
     if not model:
@@ -54,7 +62,7 @@ def _to_vehicle_entity(model: Vehiculos) -> Optional[Vehicle]:
         idvehiculo=model.idvehiculo,
         estado=model.estado,
         tipo_modem=model.tipo_modem,
-        velocidad=model.velocidad,
+        velocidad=_parse_float(model.velocidad),
         direccion=model.direccion,
         latitud=model.latitud,
         longitud=model.longitud,
@@ -323,7 +331,14 @@ class VehicleRepositoryImpl(VehicleRepository):
             vehicle_orm.departamento = vehicle.departamento
             vehicle_orm.ultimaactualizacion = vehicle.ultimaactualizacion
             vehicle_orm.direccion = vehicle.direccion
-            vehicle_orm.velocidad = vehicle.velocidad
+            # ``vehiculos.velocidad`` is stored as VARCHAR in the database.  Ensure
+            # we persist the numeric value as a string to avoid asyncpg type
+            # errors when ``None`` is allowed.  The domain entity keeps
+            # ``velocidad`` as ``float`` for easier calculations, so convert it
+            # back here when writing to the DB.
+            vehicle_orm.velocidad = (
+                str(vehicle.velocidad) if vehicle.velocidad is not None else None
+            )
             vehicle_orm.ultimoevento = vehicle.ultimoevento
             vehicle_orm.rumbo = vehicle.rumbo
             vehicle_orm.rumbo_linea_tiempo = vehicle.rumbo_linea_tiempo

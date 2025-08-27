@@ -1,6 +1,7 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession  # noqa: E501
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from typing import AsyncGenerator
 
 from app.core.domain.services import GeolocationService
 from app.core.services.vehicle_event_processor_service import (
@@ -54,22 +55,22 @@ async def get_db_session():
 
 async def get_geolocation_service(
     db_session: AsyncSession = Depends(get_db_session),
-) -> GeolocationService:
+) -> AsyncGenerator[GeolocationService, None]:
     # Retorna una instancia de PostgresGeolocationAdapter
     # que usa la sesión de base de datos
-    return PostgresGeolocationAdapter(session=db_session)
+    yield PostgresGeolocationAdapter(session=db_session)
 
 
 async def get_vehicle_event_processor_service(
     db_session: AsyncSession = Depends(get_db_session),
     geolocation_svc: GeolocationService = Depends(get_geolocation_service),
-) -> VehicleEventProcessorService:
+) -> AsyncGenerator[VehicleEventProcessorService, None]:
     vehicle_event_repo = VehicleEventRepositoryImpl(db_session)
     vehicle_repo = VehicleRepositoryImpl(db_session)
     period_repo = PeriodRepositoryImpl(db_session)
     special_route_repo = SpecialRouteRepositoryImpl(db_session)
 
-    return VehicleEventProcessorService(
+    service = VehicleEventProcessorService(
         vehicle_event_repo=vehicle_event_repo,
         vehicle_repo=vehicle_repo,
         period_repo=period_repo,
@@ -77,3 +78,5 @@ async def get_vehicle_event_processor_service(
         geolocation_service=geolocation_svc,
         event_publisher=kafka_publisher,
     )
+
+    yield service
