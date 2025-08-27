@@ -19,7 +19,6 @@ class GeolocationInfo(BaseModel):
             and self.department != "No Disponible"
         )
 
-
 class VehicleEvent(BaseModel):
     event_type: int  # tipo in SP (0, 300, 128)
     vehicle_id: str = Field(..., max_length=50)  # idveh
@@ -53,7 +52,6 @@ class VehicleEvent(BaseModel):
     current_driver_id: Optional[int] = None  # idconductor_
     event_db_id: Optional[int] = None  # idevt
 
-
 class Vehicle(BaseModel):
     idvehiculo: str
     estado: str
@@ -78,35 +76,25 @@ class Vehicle(BaseModel):
     indexevento: Optional[int] = None
     contratista: Optional[str] = None
     recurso: Optional[str] = None
-
-
 class EventoDescripcion(BaseModel):
     evento: str
     estatico: Optional[str] = "N"  # 'S' for static, 'N' for not
-
-
 class Proceso(BaseModel):
     proceso: str
     contratistas: str
     toleranciatiempo: int
-
-
 class PeriodoActivo(BaseModel):
     idperiodo: int
     idvehiculo: str
     fechadesde: datetime
     fechahasta: Optional[datetime] = None
     idconductor: Optional[int] = None
-
-
 class PeriodoConductor(BaseModel):
     idperiodo: int
     idvehiculo: str
     idconductor: int
     fechadesde: datetime
     fechahasta: Optional[datetime] = None
-
-
 class ProgramacionEspecialVehiculo(BaseModel):
     idprogramacion: int
     idvehiculo: str
@@ -115,22 +103,16 @@ class ProgramacionEspecialVehiculo(BaseModel):
     cancelada: str
     activa: str
     idruta: int
-
-
 class RutaEspecialDetalle(BaseModel):
     idruta: int
     idpunto: int
     orden: int
     tiempoglobal: Optional[float] = None  # tiempoglobal in SP
-
-
 class PuntoControlEspecial(BaseModel):
     idpunto: int
     latitud: float
     longitud: float
     radio: float
-
-
 class RutaEspecialControl(BaseModel):
     idprogramacion: int
     idpunto: int
@@ -140,8 +122,6 @@ class RutaEspecialControl(BaseModel):
     diferenciaint: float
     diferenciaglobal: float
     orden: int
-
-
 class EventoResumen(BaseModel):
     idvehiculo: str
     idevento: int

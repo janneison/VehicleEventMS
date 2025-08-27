@@ -1,7 +1,8 @@
+from typing import AsyncGenerator
+
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession  # noqa: E501
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from typing import AsyncGenerator
 
 from app.core.domain.services import GeolocationService
 from app.core.services.vehicle_event_processor_service import (
@@ -16,9 +17,9 @@ from app.infrastructure.adapters.database.repositories import (
 from app.infrastructure.adapters.geolocation.Maps_adapter import (
     PostgresGeolocationAdapter,
 )
-from app.infrastructure.adapters.messaging.noop_publisher import (
+from app.infrastructure.adapters.messaging.noop_publisher import (  # noqa: E501
     NoOpEventPublisher,
-)  # noqa: E501
+)
 from app.infrastructure.config.settings import settings
 
 # ────────────────────────────────────────────────────────────────────────────────
@@ -43,14 +44,10 @@ kafka_publisher = NoOpEventPublisher()
 # ────────────────────────────────────────────────────────────────────────────────
 # Dependencies
 # ────────────────────────────────────────────────────────────────────────────────
-
-
 async def get_db_session():
     async with AsyncSessionLocal() as session:
-        try:
+        async with session.begin():
             yield session
-        finally:
-            await session.close()
 
 
 async def get_geolocation_service(

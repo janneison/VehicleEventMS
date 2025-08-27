@@ -19,7 +19,6 @@ class KafkaEventPublisher(EventPublisher):
 
     async def publish_processed_event(self, event: VehicleEvent):
         topic = settings.KAFKA_PROCESSED_EVENTS_TOPIC
-
         # Usa model_dump_json para Pydantic v2, y json() para v1
         if int(pydantic.VERSION.split(".")[0]) >= 2:
             message = event.model_dump_json().encode("utf-8")

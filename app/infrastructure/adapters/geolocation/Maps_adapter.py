@@ -23,13 +23,6 @@ class PostgresGeolocationAdapter(GeolocationService):
             
             # Ejecutar la consulta y obtener el resultado
             result = await self.session.execute(query, {"lat": latitude, "lon": longitude})
-            
-            # getdireccion en tu SP devuelve una estructura, normalmente sería un resultado de una fila con varias columnas.
-            # Si getdireccion devuelve un tipo compuesto llamado 'direccion', por ejemplo,
-            # el resultado sería una fila con una columna que es ese tipo compuesto.
-            # Si devuelve un 'RECORD', necesitarías saber los nombres de las columnas o usar un SELECT * para obtenerlas.
-            # Basado en tu SP anterior, asumo que devuelve (direccion, municipio, departamento).
-            print("Estoy en address")
             row = result.fetchone()
 
             if row:
@@ -39,8 +32,6 @@ class PostgresGeolocationAdapter(GeolocationService):
                 address = row[0] if len(row) > 0 else None
                 city = row[1] if len(row) > 1 else None
                 department = row[2] if len(row) > 2 else None
-
-                # El SP tiene una lógica para 'No Disponible', así que replicamos esa verificación.
                 if address and address.lower() == 'no disponible':
                     address = None
                 if city and city.lower() == 'no disponible':

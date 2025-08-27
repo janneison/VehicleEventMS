@@ -32,7 +32,7 @@ from app.infrastructure.adapters.database.models import (
     Eventos,
     EventosDesc,
     EventosResumen,
-    Odométros,
+    Odometros,
     PeriodosActivo,
     PeriodosConductores,
     Procesos,
@@ -187,7 +187,7 @@ class VehicleEventRepositoryImpl(VehicleEventRepository):
         return new_event.idevento
 
     async def save_odometer(self, vehicle_id: str, value: float, date: datetime):
-        new_odometer = Odométros(idvehiculo=vehicle_id, valor=value, fecha=date)
+        new_odometer = Odometros(idvehiculo=vehicle_id, valor=value, fecha=date)
         self.session.add(new_odometer)
         await self.session.flush()
 
@@ -240,8 +240,15 @@ class VehicleEventRepositoryImpl(VehicleEventRepository):
                 keep_alive_date=event_model.fecha,  # Using event_model.fecha as fallback
             )
         return None
-      
-    async def insert_ejes_viales(self, address: str, city: str, latitude: float, longitude: float, department: str):
+
+    async def insert_ejes_viales(
+        self,
+        address: str,
+        city: str,
+        latitude: float,
+        longitude: float,
+        department: str,
+    ):
         print("ejes viales")
         new_entry = EjesViales(
             direccion=address,
@@ -308,6 +315,7 @@ class VehicleEventRepositoryImpl(VehicleEventRepository):
         self.session.add(new_summary)
         await self.session.flush()
 
+
 class VehicleRepositoryImpl(VehicleRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
@@ -331,7 +339,14 @@ class VehicleRepositoryImpl(VehicleRepository):
             vehicle_orm.departamento = vehicle.departamento
             vehicle_orm.ultimaactualizacion = vehicle.ultimaactualizacion
             vehicle_orm.direccion = vehicle.direccion
-            vehicle_orm.velocidad = vehicle.velocidad
+            # ``vehiculos.velocidad`` is stored as VARCHAR in the database.  Ensure
+            # we persist the numeric value as a string to avoid asyncpg type
+            # errors when ``None`` is allowed.  The domain entity keeps
+            # ``velocidad`` as ``float`` for easier calculations, so convert it
+            # back here when writing to the DB.
+            vehicle_orm.velocidad = (
+                str(vehicle.velocidad) if vehicle.velocidad is not None else None
+            )
             vehicle_orm.ultimoevento = vehicle.ultimoevento
             vehicle_orm.rumbo = vehicle.rumbo
             vehicle_orm.rumbo_linea_tiempo = vehicle.rumbo_linea_tiempo
@@ -352,7 +367,6 @@ class VehicleRepositoryImpl(VehicleRepository):
             pass
 
     async def get_vehicle_tolerancia_tiempo(self, vehicle_contratista: str) -> int:
-
         # Example of a simplified regex matching for direct string comparison:
         stmt = (
             select(Procesos)
@@ -485,9 +499,9 @@ class SpecialRouteRepositoryImpl(SpecialRouteRepository):
         result = await self.session.execute(stmt)
         return _to_programacion_especial_vehiculo_entity(result.scalar_one_or_none())
 
-
-    async def get_nearby_special_route_detail(self, route_id: int, latitude: float, longitude: float) -> Optional[RutaEspecialDetalle]:
-
+    async def get_nearby_special_route_detail(
+        self, route_id: int, latitude: float, longitude: float
+    ) -> Optional[RutaEspecialDetalle]:
         current_point = func.ST_GeomFromText(f"POINT({longitude} {latitude})", 4326)
 
         stmt = (

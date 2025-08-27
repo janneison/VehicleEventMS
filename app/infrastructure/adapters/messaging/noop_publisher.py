@@ -1,7 +1,5 @@
 from app.core.domain.entities import VehicleEvent
 from app.core.ports.event_publisher import EventPublisher
-
-
 class NoOpEventPublisher(EventPublisher):
     async def start(self) -> None:
         print("⚠️ Kafka disabled: no-op start")
