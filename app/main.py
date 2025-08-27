@@ -14,7 +14,6 @@ async def lifespan(app: FastAPI):
         raise e
 
     yield
-
     # Shutdown
     try:
         print("🛑 Stopping Kafka Producer...")
@@ -24,7 +23,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="Vehicle Event Microservice",
-    description="Microservice to process vehicle tracking events using hexagonal architecture.",
+    description="Microservice to process vehicle tracking events.",
     version="1.0.0",
     lifespan=lifespan
 )

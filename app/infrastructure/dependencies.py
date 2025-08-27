@@ -44,8 +44,6 @@ kafka_publisher = NoOpEventPublisher()
 # ────────────────────────────────────────────────────────────────────────────────
 # Dependencies
 # ────────────────────────────────────────────────────────────────────────────────
-
-
 async def get_db_session():
     async with AsyncSessionLocal() as session:
         async with session.begin():
